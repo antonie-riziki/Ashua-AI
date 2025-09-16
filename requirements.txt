@@ -2,3 +2,4 @@ django
 gtts
 google-generativeai
 speechrecognition
+python-dotenv
