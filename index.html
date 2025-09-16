@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ashua AI - Virtual Claims Assistant</title>
+    <meta name="description" content="Intelligence with Empathy - Advanced AI-powered insurance claims processing">
+    <meta name="author" content="Ashua AI">
+    
+    <meta property="og:title" content="Ashua AI - Virtual Claims Assistant">
+    <meta property="og:description" content="Intelligence with Empathy - Advanced AI-powered insurance claims processing">
+    <meta property="og:type" content="website">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Ashua AI Design System */
+        :root {
+            --primary: 213 94% 68%;
+            --primary-light: 213 89% 78%;
+            --secondary: 267 83% 72%;
+            --accent: 180 84% 65%;
+            --trust: 213 94% 68%;
+            --empathy: 267 83% 72%;
+            --innovation: 180 84% 65%;
+            --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
+            --gradient-background: linear-gradient(135deg, hsl(220 25% 97%), hsl(213 89% 98%), hsl(267 83% 98%));
+            --gradient-card: linear-gradient(145deg, hsla(0, 0%, 100%, 0.8), hsla(213, 89%, 98%, 0.6));
+            --shadow-floating: 0 12px 40px hsla(213, 94%, 68%, 0.15);
+            --shadow-card: 0 8px 32px hsla(225, 15%, 15%, 0.08);
+            --hover-glow: 0 0 30px hsla(var(--primary), 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--gradient-background);
+            background-size: 400% 400%;
+            animation: gradient-flow 8s ease infinite;
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: hsl(225 15% 15%);
+        }
+
+        .container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .header {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+        }
+
+        .ashua-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3rem;
+            max-width: 48rem;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .welcome-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            animation: fade-in 1s ease-out;
+        }
+
+        .main-title {
+            font-size: 3rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .tagline {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: hsl(225 8% 45%);
+        }
+
+        .audio-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .audio-button {
+            position: relative;
+            width: 8rem;
+            height: 8rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background: var(--gradient-primary);
+            box-shadow: var(--shadow-floating);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            animation: fade-in 1s ease-out 0.3s both;
+        }
+
+        .audio-button:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-floating), var(--hover-glow);
+        }
+
+        .audio-button:active {
+            transform: scale(0.95);
+        }
+
+        .audio-button.recording {
+            animation: pulse-glow 2s infinite;
+        }
+
+        .mic-icon {
+            width: 2rem;
+            height: 2rem;
+            fill: white;
+        }
+
+        .interaction-text {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            animation: fade-in 1s ease-out 0.6s both;
+        }
+
+        .speak-text {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: hsl(225 15% 15%);
+        }
+
+        .subtitle {
+            font-size: 1.125rem;
+            color: hsl(225 8% 45%);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 4rem;
+            width: 100%;
+            animation: fade-in 1s ease-out 0.9s both;
+        }
+
+        .feature-card {
+            border-radius: 1rem;
+            padding: 1.5rem;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: var(--gradient-card);
+            box-shadow: var(--shadow-card);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-floating);
+        }
+
+        .feature-icon {
+            width: 3rem;
+            height: 3rem;
+            margin: 0 auto 1rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .trust-icon {
+            background-color: hsla(var(--trust), 0.1);
+        }
+
+        .trust-dot {
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            background-color: hsl(var(--trust));
+        }
+
+        .empathy-icon {
+            background-color: hsla(var(--empathy), 0.1);
+        }
+
+        .empathy-dot {
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            background-color: hsl(var(--empathy));
+        }
+
+        .innovation-icon {
+            background-color: hsla(var(--innovation), 0.1);
+        }
+
+        .innovation-dot {
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            background-color: hsl(var(--innovation));
+        }
+
+        .feature-title {
+            font-weight: 600;
+            color: hsl(225 15% 15%);
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-description {
+            font-size: 0.875rem;
+            color: hsl(225 8% 45%);
+        }
+
+        /* Waveform animation for recording state */
+        .waveform {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+        }
+
+        .waveform-bar {
+            width: 0.25rem;
+            background-color: white;
+            border-radius: 0.125rem;
+            animation: waveform 1.5s ease-in-out infinite;
+        }
+
+        .waveform-bar:nth-child(1) { animation-delay: 0s; height: 0.75rem; }
+        .waveform-bar:nth-child(2) { animation-delay: 0.1s; height: 1.25rem; }
+        .waveform-bar:nth-child(3) { animation-delay: 0.2s; height: 1rem; }
+        .waveform-bar:nth-child(4) { animation-delay: 0.3s; height: 1.5rem; }
+        .waveform-bar:nth-child(5) { animation-delay: 0.4s; height: 0.875rem; }
+
+        /* Animations */
+        @keyframes gradient-flow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% {
+                box-shadow: var(--shadow-floating), 0 0 20px hsla(var(--primary), 0.4);
+            }
+            50% {
+                box-shadow: var(--shadow-floating), 0 0 40px hsla(var(--secondary), 0.6);
+            }
+        }
+
+        @keyframes waveform {
+            0%, 100% { transform: scaleY(0.5); }
+            50% { transform: scaleY(1); }
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2.5rem;
+            }
+            
+            .audio-button {
+                width: 6rem;
+                height: 6rem;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+                margin-top: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="ashua-logo">Ashua AI</div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Welcome Text -->
+            <div class="welcome-section">
+                <h1 class="main-title">Welcome to Ashua AI</h1>
+                <p class="tagline">Intelligence with Empathy</p>
+            </div>
+
+            <!-- Audio Button Section -->
+            <div class="audio-section">
+                <button class="audio-button" id="audioButton" aria-label="Start recording">
+                    <svg class="mic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" fill="currentColor"/>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <line x1="12" y1="19" x2="12" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <line x1="8" y1="23" x2="16" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <div class="waveform" style="display: none;">
+                        <div class="waveform-bar"></div>
+                        <div class="waveform-bar"></div>
+                        <div class="waveform-bar"></div>
+                        <div class="waveform-bar"></div>
+                        <div class="waveform-bar"></div>
+                    </div>
+                </button>
+
+                <!-- Tagline -->
+                <div class="interaction-text">
+                    <p class="speak-text">Speak your claim. Ashua AI listens.</p>
+                    <p class="subtitle" id="subtitle">Click the button above to start your insurance claim</p>
+                </div>
+            </div>
+
+            <!-- Features Preview -->
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon trust-icon">
+                        <div class="trust-dot"></div>
+                    </div>
+                    <h3 class="feature-title">Trustworthy</h3>
+                    <p class="feature-description">
+                        Your data is secure and handled with the highest level of care
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon empathy-icon">
+                        <div class="empathy-dot"></div>
+                    </div>
+                    <h3 class="feature-title">Empathetic</h3>
+                    <p class="feature-description">
+                        We understand that filing a claim can be stressful
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon innovation-icon">
+                        <div class="innovation-dot"></div>
+                    </div>
+                    <h3 class="feature-title">Innovative</h3>
+                    <p class="feature-description">
+                        Advanced AI technology to streamline your experience
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const audioButton = document.getElementById('audioButton');
+        const micIcon = document.querySelector('.mic-icon');
+        const waveform = document.querySelector('.waveform');
+        const subtitle = document.getElementById('subtitle');
+        let isRecording = false;
+
+        audioButton.addEventListener('click', function() {
+            if (!isRecording) {
+                // Start recording
+                isRecording = true;
+                audioButton.classList.add('recording');
+                micIcon.style.display = 'none';
+                waveform.style.display = 'flex';
+                subtitle.textContent = "Recording... We're here to help you through your claim.";
+                audioButton.setAttribute('aria-label', 'Stop recording');
+
+                // Simulate navigation to dashboard after 2 seconds
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 2000);
+            } else {
+                // Stop recording
+                isRecording = false;
+                audioButton.classList.remove('recording');
+                micIcon.style.display = 'block';
+                waveform.style.display = 'none';
+                subtitle.textContent = "Click the button above to start your insurance claim";
+                audioButton.setAttribute('aria-label', 'Start recording');
+            }
+        });
+    </script>
+</body>
+</html>
