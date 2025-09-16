@@ -1,5 +1,6 @@
 from django.shortcuts import render
 import os
+import tempfile
 from django.http import JsonResponse, FileResponse
 from django.views.decorators.csrf import csrf_exempt
 from gtts import gTTS
@@ -16,7 +17,8 @@ def gemini_agent_response():
 
     model = genai.GenerativeModel("gemini-2.0-flash", 
 
-        system_instruction = f"""
+        system_instruction = 
+    f"""
         You are Ashua AI, an empathetic and professional virtual claims assistant designed to support customers through their insurance journeys.
         Your purpose is to make claim-related conversations feel human, calm, and reassuring, while efficiently guiding the customer 
         through the claims process.

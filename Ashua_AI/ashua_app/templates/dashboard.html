@@ -485,6 +485,13 @@
     <script>
         let mediaRecorder;
         let audioChunks = [];
+        let isRecording = false;
+
+        const audioButton = document.getElementById("audioButton");
+        const micIcon = document.querySelector(".mic-icon");
+        const waveform = document.querySelector(".waveform");
+        const sidebarText = document.getElementById("sidebarText");
+        const chatContainer = document.getElementById("chatContainer");
 
         audioButton.addEventListener("click", async () => {
             if (!isRecording) {
