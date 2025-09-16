@@ -483,17 +483,10 @@
     </div>
 
     <script>
-        // Initialize timestamps
-        document.getElementById('firstTimestamp').textContent = new Date().toLocaleTimeString();
+        let mediaRecorder;
+        let audioChunks = [];
 
-        const audioButton = document.getElementById('audioButton');
-        const micIcon = document.querySelector('.mic-icon');
-        const waveform = document.querySelector('.waveform');
-        const sidebarText = document.getElementById('sidebarText');
-        const chatContainer = document.getElementById('chatContainer');
-        let isRecording = false;
-
-        audioButton.addEventListener('click', function() {
+        audioButton.addEventListener("click", async () => {
             if (!isRecording) {
                 startRecording();
             } else {
@@ -501,25 +494,21 @@
             }
         });
 
-        function startRecording() {
+        async function startRecording() {
             isRecording = true;
             audioButton.classList.add('recording');
             micIcon.style.display = 'none';
             waveform.style.display = 'flex';
             sidebarText.textContent = 'Recording...';
-            audioButton.setAttribute('aria-label', 'Stop recording');
 
-            // Simulate user interaction after 2 seconds
-            setTimeout(() => {
-                addUserMessage();
-                updateAnalysis();
-                stopRecording();
-                
-                // Add AI response after 1.5 seconds
-                setTimeout(() => {
-                    addAgentMessage();
-                }, 1500);
-            }, 2000);
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.start();
+            audioChunks = [];
+
+            mediaRecorder.ondataavailable = (event) => {
+                audioChunks.push(event.data);
+            };
         }
 
         function stopRecording() {
@@ -528,62 +517,56 @@
             micIcon.style.display = 'block';
             waveform.style.display = 'none';
             sidebarText.textContent = 'Tap to speak';
-            audioButton.setAttribute('aria-label', 'Start recording');
+
+            mediaRecorder.stop();
+            mediaRecorder.onstop = async () => {
+                const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+                const formData = new FormData();
+                formData.append("file", audioBlob, "input.webm");
+
+                const response = await fetch("/process-audio/", {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+
+                    // Show user text
+                    addUserMessage(data.user_text);
+
+                    // Show agent text
+                    addAgentMessage(data.agent_text);
+
+                    // Play agent audio
+                    const audio = new Audio(data.audio_url);
+                    audio.play();
+                }
+            };
         }
 
-        function addUserMessage() {
+        function addUserMessage(text) {
             const userMessage = document.createElement('div');
             userMessage.className = 'chat-bubble user';
             userMessage.innerHTML = `
-                <p class="message-content">I was in a car accident yesterday on Highway 101. The other driver ran a red light and hit my vehicle. I have photos and the police report number.</p>
+                <p class="message-content">${text}</p>
                 <span class="message-timestamp">${new Date().toLocaleTimeString()}</span>
             `;
             chatContainer.appendChild(userMessage);
             scrollToBottom();
         }
 
-        function addAgentMessage() {
+        function addAgentMessage(text) {
             const agentMessage = document.createElement('div');
             agentMessage.className = 'chat-bubble agent';
             agentMessage.innerHTML = `
-                <p class="message-content">I'm sorry to hear about your accident. I can see you have documentation ready, which is excellent. Let me help you start your claim. Can you please provide me with your policy number and the exact time the accident occurred?</p>
+                <p class="message-content">${text}</p>
                 <span class="message-timestamp">${new Date().toLocaleTimeString()}</span>
             `;
             chatContainer.appendChild(agentMessage);
             scrollToBottom();
         }
 
-        function updateAnalysis() {
-            // Update sentiment
-            const sentimentBadge = document.getElementById('sentimentBadge');
-            sentimentBadge.textContent = 'Negative';
-            sentimentBadge.className = 'badge badge-negative';
-
-            // Update tone
-            document.getElementById('toneValue').textContent = 'Concerned';
-
-            // Update priority
-            const priorityBadge = document.getElementById('priorityBadge');
-            priorityBadge.textContent = 'High Priority';
-            priorityBadge.className = 'badge badge-high';
-
-            // Update category
-            document.getElementById('categoryValue').textContent = 'Auto Accident';
-
-            // Update keywords
-            const keywordsContainer = document.getElementById('keywordsContainer');
-            keywordsContainer.innerHTML = `
-                <span class="badge badge-outline">car accident</span>
-                <span class="badge badge-outline">highway</span>
-                <span class="badge badge-outline">red light</span>
-                <span class="badge badge-outline">police report</span>
-                <span class="badge badge-outline">photos</span>
-            `;
-        }
-
-        function scrollToBottom() {
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
     </script>
 </body>
 </html>

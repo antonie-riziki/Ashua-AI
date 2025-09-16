@@ -9,5 +9,6 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('', views.home, name='home'),
     path('dashboard/', views.dashboard, name='dashboard'),
+    path("process-audio/", views.process_audio, name="process_audio")
 
 ]

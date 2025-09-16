@@ -1,1 +1,4 @@
 django
+gtts
+google-generativeai
+speechrecognition
