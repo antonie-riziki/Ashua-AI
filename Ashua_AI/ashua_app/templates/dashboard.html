@@ -483,8 +483,16 @@
     </div>
 
     <script>
+
         let mediaRecorder;
         let audioChunks = [];
+        let isRecording = false;
+
+        const audioButton = document.getElementById("audioButton");
+        const micIcon = document.querySelector(".mic-icon");
+        const waveform = document.querySelector(".waveform");
+        const sidebarText = document.getElementById("sidebarText");
+        const chatContainer = document.getElementById("chatContainer");
 
         audioButton.addEventListener("click", async () => {
             if (!isRecording) {
@@ -520,29 +528,31 @@
 
             mediaRecorder.stop();
             mediaRecorder.onstop = async () => {
-                const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
-                const formData = new FormData();
-                formData.append("file", audioBlob, "input.webm");
+            // Use WAV instead of webm
+            const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+            const formData = new FormData();
+            formData.append("file", audioBlob, "input.wav");
 
-                const response = await fetch("/process-audio/", {
-                    method: "POST",
-                    body: formData
-                });
+            const response = await fetch("/process-audio/", {
+                method: "POST",
+                body: formData
+            });
 
-                if (response.ok) {
-                    const data = await response.json();
+            if (response.ok) {
+                const data = await response.json();
 
-                    // Show user text
-                    addUserMessage(data.user_text);
+                // Show user text
+                addUserMessage(data.user_text);
 
-                    // Show agent text
-                    addAgentMessage(data.agent_text);
+                // Show agent text
+                addAgentMessage(data.agent_text);
 
-                    // Play agent audio
-                    const audio = new Audio(data.audio_url);
-                    audio.play();
-                }
-            };
+                // Play agent audio
+                const audio = new Audio(data.audio_url);
+                audio.play();
+            }
+        };
+
         }
 
         function addUserMessage(text) {

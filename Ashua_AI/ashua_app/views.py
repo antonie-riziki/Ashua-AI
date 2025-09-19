@@ -1,4 +1,5 @@
 from django.shortcuts import render
+import tempfile
 import os
 from django.http import JsonResponse, FileResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -107,7 +108,7 @@ def process_audio(request):
     if request.method == "POST" and request.FILES.get("file"):
         # Save uploaded file
         audio_file = request.FILES["file"]
-        temp_input = tempfile.NamedTemporaryFile(delete=False, suffix=".webm")
+        temp_input = tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
         for chunk in audio_file.chunks():
             temp_input.write(chunk)
         temp_input.close()
