@@ -1,18 +1,21 @@
 from django.shortcuts import render
 import os
+import json
 from django.http import JsonResponse, FileResponse
 from django.views.decorators.csrf import csrf_exempt
 from gtts import gTTS
 import speech_recognition as sr
 import google.generativeai as genai
+import tempfile
 
 from dotenv import load_dotenv
 
 
-genai.configure(api_key = os.getenv("GOOGLE_API_KEY"))
+# genai.configure(api_key = os.getenv("GOOGLE_API_KEY"))
+genai.configure(api_key="AIzaSyCQhclyS920GA_IRnJ1Uq_u3cp5r0CgvTk")
+  
 
-
-def gemini_agent_response():
+def gemini_agent_response(prompt):
 
     model = genai.GenerativeModel("gemini-2.0-flash", 
 
@@ -85,7 +88,7 @@ def gemini_agent_response():
 
 
     response = model.generate_content(
-        
+        prompt,
         generation_config = genai.GenerationConfig(
         max_output_tokens=1000,
         temperature=1.5, 
@@ -101,7 +104,6 @@ def gemini_agent_response():
 
 
 
-
 @csrf_exempt
 def process_audio(request):
     if request.method == "POST" and request.FILES.get("file"):
@@ -112,16 +114,20 @@ def process_audio(request):
             temp_input.write(chunk)
         temp_input.close()
 
+        # Convert webm -> wav using ffmpeg
+        temp_wav = tempfile.NamedTemporaryFile(delete=False, suffix=".wav").name
+        os.system(f"ffmpeg -i {temp_input.name} -ar 16000 -ac 1 {temp_wav} -y")
+
         # --- Step 1: Speech-to-Text ---
         recognizer = sr.Recognizer()
-        with sr.AudioFile(temp_input.name) as source:
+        with sr.AudioFile(temp_wav) as source:
             audio_data = recognizer.record(source)
             try:
                 user_text = recognizer.recognize_google(audio_data)
             except sr.UnknownValueError:
                 user_text = "Sorry, I couldn't understand that."
 
-        # --- Step 2: Gemini model ---
+        # --- Step 2: Gemini ---
         agent_text = gemini_agent_response(user_text)
 
         # --- Step 3: Text-to-Speech ---
@@ -129,7 +135,7 @@ def process_audio(request):
         output_path = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3").name
         tts.save(output_path)
 
-        # --- Step 4: Respond with text + audio ---
+        # --- Step 4: Respond ---
         response = {
             "user_text": user_text,
             "agent_text": agent_text,
@@ -138,6 +144,38 @@ def process_audio(request):
         return JsonResponse(response)
 
     return JsonResponse({"error": "Invalid request"}, status=400)
+
+
+
+
+
+
+@csrf_exempt
+def process_text(request):
+    if request.method == "POST":
+        data = json.loads(request.body.decode("utf-8"))
+        user_text = data.get("text", "")
+
+        print(user_text)
+
+        # Step 1: Gemini response
+        agent_text = gemini_agent_response(user_text)
+
+        # Step 2: TTS
+        tts = gTTS(text=agent_text, lang="en")
+        output_path = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3").name
+        tts.save(output_path)
+
+        # Step 3: Response
+        response = {
+            "user_text": user_text,
+            "agent_text": agent_text,
+            "audio_url": "/media/" + os.path.basename(output_path)
+        }
+        return JsonResponse(response)
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
 
 
 

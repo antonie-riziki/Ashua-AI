@@ -483,90 +483,105 @@
     </div>
 
     <script>
-        let mediaRecorder;
-        let audioChunks = [];
+        let isRecording = false;
+        let recognition;
 
-        audioButton.addEventListener("click", async () => {
+        const audioButton = document.getElementById("audioButton");
+        const micIcon = document.querySelector(".mic-icon");
+        const waveform = document.querySelector(".waveform");
+        const sidebarText = document.getElementById("sidebarText");
+        const chatContainer = document.getElementById("chatContainer");
+
+        // Initialize speech recognition
+        function initRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = true; // keep listening until stopped
+            recognition.interimResults = false;
+            recognition.lang = "en-US";
+
+            recognition.onresult = async (event) => {
+                const userText = event.results[event.results.length - 1][0].transcript;
+                addUserMessage(userText);
+
+                // Send user text to backend
+                const response = await fetch("/process-text/", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ text: userText })
+                });
+
+                const data = await response.json();
+                addAgentMessage(data.agent_text);
+
+                // Play agent audio
+                const audio = new Audio(data.audio_url);
+                audio.play();
+            };
+
+            recognition.onerror = function(event) {
+                if (event.error === "no-speech") {
+                    console.log("No speech detected, please try again.");
+                    // Optional: restart recognition automatically
+                    recognition.stop();
+                    setTimeout(() => recognition.start(), 500);
+                } else {
+                    console.error("Speech recognition error:", event.error);
+                }
+            };
+
+        }
+
+        audioButton.addEventListener("click", () => {
             if (!isRecording) {
-                startRecording();
+                startRecognition();
             } else {
-                stopRecording();
+                stopRecognition();
             }
         });
 
-        async function startRecording() {
+        function startRecognition() {
             isRecording = true;
-            audioButton.classList.add('recording');
-            micIcon.style.display = 'none';
-            waveform.style.display = 'flex';
-            sidebarText.textContent = 'Recording...';
-
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorder = new MediaRecorder(stream);
-            mediaRecorder.start();
-            audioChunks = [];
-
-            mediaRecorder.ondataavailable = (event) => {
-                audioChunks.push(event.data);
-            };
+            micIcon.style.display = "none";
+            waveform.style.display = "flex";
+            sidebarText.textContent = "Listening...";
+            recognition.start();
         }
 
-        function stopRecording() {
+        function stopRecognition() {
             isRecording = false;
-            audioButton.classList.remove('recording');
-            micIcon.style.display = 'block';
-            waveform.style.display = 'none';
-            sidebarText.textContent = 'Tap to speak';
-
-            mediaRecorder.stop();
-            mediaRecorder.onstop = async () => {
-                const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
-                const formData = new FormData();
-                formData.append("file", audioBlob, "input.webm");
-
-                const response = await fetch("/process-audio/", {
-                    method: "POST",
-                    body: formData
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-
-                    // Show user text
-                    addUserMessage(data.user_text);
-
-                    // Show agent text
-                    addAgentMessage(data.agent_text);
-
-                    // Play agent audio
-                    const audio = new Audio(data.audio_url);
-                    audio.play();
-                }
-            };
+            micIcon.style.display = "block";
+            waveform.style.display = "none";
+            sidebarText.textContent = "Tap to speak";
+            recognition.stop();
         }
 
         function addUserMessage(text) {
-            const userMessage = document.createElement('div');
-            userMessage.className = 'chat-bubble user';
+            const userMessage = document.createElement("div");
+            userMessage.className = "chat-bubble user";
             userMessage.innerHTML = `
                 <p class="message-content">${text}</p>
                 <span class="message-timestamp">${new Date().toLocaleTimeString()}</span>
             `;
             chatContainer.appendChild(userMessage);
-            scrollToBottom();
+            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
         function addAgentMessage(text) {
-            const agentMessage = document.createElement('div');
-            agentMessage.className = 'chat-bubble agent';
+            const agentMessage = document.createElement("div");
+            agentMessage.className = "chat-bubble agent";
             agentMessage.innerHTML = `
                 <p class="message-content">${text}</p>
                 <span class="message-timestamp">${new Date().toLocaleTimeString()}</span>
             `;
             chatContainer.appendChild(agentMessage);
-            scrollToBottom();
+            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
+
+        // Initialize on load
+        initRecognition();
     </script>
+
 </body>
 </html>
