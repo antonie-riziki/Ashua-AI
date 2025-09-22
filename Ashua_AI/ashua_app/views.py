@@ -10,9 +10,9 @@ import tempfile
 
 from dotenv import load_dotenv
 
+load_dotenv()
 
-# genai.configure(api_key = os.getenv("GOOGLE_API_KEY"))
-genai.configure(api_key="AIzaSyCQhclyS920GA_IRnJ1Uq_u3cp5r0CgvTk")
+genai.configure(api_key = os.getenv("GOOGLE_API_KEY"))
   
 
 def gemini_agent_response(prompt):
@@ -156,7 +156,7 @@ def process_text(request):
         data = json.loads(request.body.decode("utf-8"))
         user_text = data.get("text", "")
 
-        print(user_text)
+        # print(user_text)
 
         # Step 1: Gemini response
         agent_text = gemini_agent_response(user_text)
